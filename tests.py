@@ -1,6 +1,8 @@
+import io
+import sys
 from unittest import TestCase
 
-from main import Game
+from main import Game, GameField
 
 
 class TestGame(TestCase):
@@ -47,6 +49,29 @@ class TestGame(TestCase):
 
         self.game.move_cursor(direction=(-1, -1))
         self.assertTupleEqual((1, 1), self.game.cursor.get_pos())
+
+    def tearDown(self) -> None:
+        pass
+
+
+class TestGameField(TestCase):
+
+    def setUp(self) -> None:
+        self.field = GameField()
+
+    def test__draw(self):
+        reference_data = \
+            f'┌───┬───┬───┐\n' \
+            f'│   │   │   │\n' \
+            f'├───┼───┼───┤\n' \
+            f'│   │   │   │\n' \
+            f'├───┼───┼───┤\n' \
+            f'│   │   │   │\n' \
+            f'└───┴───┴───┘\n'
+        output = io.StringIO()
+        sys.stdout = output
+        self.field.draw()
+        self.assertEqual(reference_data, output.getvalue())
 
     def tearDown(self) -> None:
         pass

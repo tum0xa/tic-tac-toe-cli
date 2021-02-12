@@ -35,16 +35,7 @@ class GameField:
     def __get_empty_objects(self) -> list:
         return [SPACE for _ in range(self.__field_size ** 2)]
 
-    def get_center_cell_position(self):
-        return self.__field_size//2, self.__field_size//2
-
-    def get_size(self):
-        return self.__field_size
-
-    def set_objects(self, objects):
-        self.__objects = objects
-
-    def draw(self):
+    def __prepare_field(self):
         if not self.__objects:
             self.__objects = self.__get_empty_objects()
         top_line = f'{LEFT_TOP}{HORIZONTAL * self.__cell_size}' + \
@@ -59,7 +50,7 @@ class GameField:
         )
         between_horizontal = f'{LEFT_BETWEEN}{HORIZONTAL * self.__cell_size}' + \
                              f'{BETWEEN_BETWEEN}{HORIZONTAL * self.__cell_size}' * (
-                                     self.__field_size - 1) + \
+                                 self.__field_size - 1) + \
                              f'{RIGHT_BETWEEN}'
 
         between_cells = '\n'.join([between_vertical, between_horizontal] * (self.__field_size - 1))
@@ -69,7 +60,20 @@ class GameField:
                       (self.__field_size - 1) + \
                       f'{RIGHT_BOTTOM}'
         field = "\n".join([top_line, between_cells, between_vertical, bottom_line])
-        print(field.format(*self.__objects))
+        return field.format(*self.__objects)
+
+    def get_center_cell_position(self):
+        return self.__field_size//2, self.__field_size//2
+
+    def get_size(self):
+        return self.__field_size
+
+    def set_objects(self, objects):
+        self.__objects = objects
+
+    def draw(self):
+        field = self.__prepare_field()
+        print(field)
 
 
 class GameObject:
