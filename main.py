@@ -1,26 +1,26 @@
 from typing import List
 
-LEFT_BETWEEN = "├"
-LEFT_TOP = "┌"
-LEFT_BOTTOM = "└"
-RIGHT_BETWEEN = "┤"
-RIGHT_TOP = "┐"
-RIGHT_BOTTOM = "┘"
-TOP_BETWEEN = "┬"
-BOTTOM_BETWEEN = "┴"
-BETWEEN_BETWEEN = "┼"
-HORIZONTAL = "─"
-VERTICAL = "│"
-DUMMY = "{}"
-SPACE = " "
+from settings import (
+    BETWEEN_BETWEEN, BOTTOM_BETWEEN, CURSOR, DEFAULT_CELL_SIZE, DEFAULT_FIELD_SIZE, DUMMY,
+    HORIZONTAL,
+    LEFT_BETWEEN,
+    LEFT_BOTTOM, LEFT_TOP, RIGHT_BETWEEN, RIGHT_BOTTOM, RIGHT_TOP,
+    SPACE,
+    TOP_BETWEEN, VERTICAL,
+)
 
-TIC = "X"
-TOE = "O"
 
-CURSOR = "█"
+class FieldObjectFromGameObjectFactory:
 
-DEFAULT_CELL_SIZE = 3
-DEFAULT_FIELD_SIZE = 3
+    @staticmethod
+    def generate(objects: List['GameObject'], field_size: int) -> list:
+        field_objects = [SPACE for _ in range(field_size ** 2)]
+        for game_object in objects:
+            x, y = game_object.get_pos()
+            position = (y * field_size) + x
+            field_objects.pop(position)
+            field_objects.insert(position, game_object.character)
+        return field_objects
 
 
 class GameField:
@@ -53,7 +53,7 @@ class GameField:
         horizontal_cell_size = int(self.__cell_size / 3) if self.__cell_size >= 3 else 1
         between_vertical = '\n'.join(
             [
-                f'{VERTICAL}{DUMMY.center(self.__cell_size+1, SPACE)}' * self.__field_size +
+                f'{VERTICAL}{DUMMY.center(self.__cell_size + 1, SPACE)}' * self.__field_size +
                 f'{VERTICAL}'
             ] * horizontal_cell_size
         )
@@ -65,7 +65,8 @@ class GameField:
         between_cells = '\n'.join([between_vertical, between_horizontal] * (self.__field_size - 1))
 
         bottom_line = f'{LEFT_BOTTOM}{HORIZONTAL * self.__cell_size}' + \
-                      f'{BOTTOM_BETWEEN}{HORIZONTAL * self.__cell_size}' * (self.__field_size - 1) + \
+                      f'{BOTTOM_BETWEEN}{HORIZONTAL * self.__cell_size}' * \
+                      (self.__field_size - 1) + \
                       f'{RIGHT_BOTTOM}'
         field = "\n".join([top_line, between_cells, between_vertical, bottom_line])
         print(field.format(*self.__objects))
@@ -84,19 +85,6 @@ class GameObject:
 
     def get_pos(self):
         return self.pos_x, self.pos_y
-
-
-class FieldObjectFromGameObjectFactory:
-
-    @staticmethod
-    def generate(objects: List['GameObject'], field_size: int) -> list:
-        field_objects = [SPACE for _ in range(field_size ** 2)]
-        for game_object in objects:
-            x, y = game_object.get_pos()
-            position = (y * field_size) + x
-            field_objects.pop(position)
-            field_objects.insert(position, game_object.character)
-        return field_objects
 
 
 class Game:
