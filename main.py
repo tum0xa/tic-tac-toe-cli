@@ -104,23 +104,58 @@ class Game:
     __slots__ = ['cursor', 'field', 'objects']
 
     def __init__(self):
-        self.field = GameField(3, 7)
+        self.field = GameField(3, 3)
         self.cursor = None
         self.objects = []
         self.init_cursor()
 
-    def run(self):
+    def run(self) -> None:
         field_objects = FieldObjectFromGameObjectFactory().generate(
             self.objects, self.field.get_size()
         )
         self.field.set_objects(field_objects)
         self.field.draw()
 
-    def init_cursor(self):
+    def init_cursor(self) -> None:
         self.cursor = GameObject(CURSOR)
         center_cell_position = self.field.get_center_cell_position()
         self.cursor.set_pos(*center_cell_position)
         self.objects.append(self.cursor)
+
+    def move_cursor(self, direction: tuple) -> None:
+        x_max_pos = self.field.get_size() - 1
+        y_max_pos = x_max_pos
+        x, y = self.cursor.get_pos()
+        new_x, new_y = x, y
+        if direction == (1, 0):
+            new_x = x + 1
+        elif direction == (-1, 0):
+            new_x = x - 1
+        elif direction == (0, 1):
+            new_y = y + 1
+        elif direction == (0, -1):
+            new_y = y - 1
+        elif direction == (1, 1):
+            new_x = x + 1
+            new_y = y + 1
+        elif direction == (-1, -1):
+            new_x = x - 1
+            new_y = y - 1
+        else:
+            new_x = x
+            new_y = y
+
+        if new_x > x_max_pos:
+            new_x = 0
+        elif new_x < 0:
+            new_x = x_max_pos
+
+        if new_y > y_max_pos:
+            new_y = 0
+        elif new_y < 0:
+            new_y = y_max_pos
+
+        self.cursor.set_pos(new_x, new_y)
 
 
 if __name__ == '__main__':
